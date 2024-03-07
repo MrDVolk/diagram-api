@@ -1,14 +1,14 @@
-from typing import Optional
-
 from fastapi import FastAPI
+from dgrm import get_json
 
 app = FastAPI()
 
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"available": True}
 
-@app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
-    return {"item_id": item_id, "q": q}
+
+@app.post("/convert")
+async def convert(input_string: str):
+    return get_json(input_string)
