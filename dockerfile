@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . .
 
 RUN apt-get update 
-RUN apt-get install -y graphviz libgraphviz-dev
+RUN apt-get install -y build-essential graphviz libgraphviz-dev
 
 RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
