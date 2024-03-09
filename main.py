@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from fastapi import FastAPI
-from dgrm import get_json
+from dgrm import upload_figure
 
 
 app = FastAPI()
@@ -16,4 +16,4 @@ async def root():
 
 @app.post("/convert")
 async def convert(request_data: ConvertRequest):
-    return {"output": get_json(request_data.input_string)}
+    return {"link": upload_figure(request_data.input_string)}

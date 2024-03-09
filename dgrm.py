@@ -1,8 +1,15 @@
-import json
+import requests
 import pygraphviz as pgv
 
 
-def get_json(input_string):
+def upload_figure(input_string: str) -> str:
+    json_object = get_json(input_string)
+    response = requests.post("https://api.dgrm.net/api/e/c", json=json_object)
+    result_id = response.content.decode('utf-8')
+    return f"https://app.dgrm.net/?k={result_id}"
+
+
+def get_json(input_string: str) -> dict:
     delimiter = "###"
     definitions, edges = input_string.split(delimiter)
     definitions, edges = definitions.strip(), edges.strip()
@@ -35,8 +42,7 @@ def get_json(input_string):
     graph_object.draw('diagram.png', prog='dot')
     
     graph_json = graph_to_json_with_positions(graph_object)
-    json_string = json.dumps(graph_json)
-    return json_string
+    return graph_json
 
 
 def round_to_24(int_number: int, correction: int = 2) -> int:
@@ -48,7 +54,7 @@ def round_to_24(int_number: int, correction: int = 2) -> int:
     return rounded * correction
 
 
-def graph_to_json_with_positions(graph):
+def graph_to_json_with_positions(graph: pgv.AGraph) -> dict:
     graph.layout(prog='dot')
     json_graph = {'v': '1.2', 's': {}}
     max_y_pos = max([
