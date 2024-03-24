@@ -8,6 +8,23 @@ class Converter:
             config = dict()
             
         self.config = config
+        self.config.setdefault('shape_mapping', {
+            'circle': 1, 
+            'rectangle': 2, 
+            'diamond': 4
+        })
+        self.config.setdefault('color_mapping', {
+            'red': 'd-cl-red',
+            'orange': 'd-cl-orange',
+            'green': 'd-cl-green',
+            'blue': 'd-cl-blue',
+            'dblue': 'd-cl-dblue',
+            'dgray': 'd-cl-dgray'
+        })
+        self.config.setdefault('edge_mapping', {
+            'normal': 'd-arw-e',
+            'dash': 'd-dash'
+        })
 
     def to_json(self, graph: pgv.AGraph) -> dict:
         graph.layout(prog='dot')
@@ -26,21 +43,25 @@ class Converter:
             width = convert_value(node.attr['width'], 'width')
 
             label = node.attr['label']
-            json_graph['s'][node] = {"id": node, "type": 2, "position": {"x": x, "y": max_y_pos-y}, "title": label, "w": width, "h": height}
+            color = self._map_color(node.attr.get('color', 'blue'))
+            shape = self._map_shape(node.attr.get('shape', 'rectangle'))
+            json_graph['s'][node] = {"id": node, "type": shape, "position": {"x": x, "y": max_y_pos-y}, "title": label, "w": width, "h": height, "c": [color]}
         
         for edge in graph.edges():
-            label = edge.attr['label']
-            edge_type = edge.attr['type'] if 'type' in edge.attr else 'normal'
-            match edge_type:
-                case 'normal':
-                    edge_class = "d-arw-e"
-                case 'dash':
-                    edge_class = "d-dash"
-                case _:
-                    edge_class = "d-arw-e"
+            label = edge.attr.get('label', '')
+            edge_class = self._map_edge(edge.attr.get('type', 'normal'))
                 
             start, end = edge
             edge_id = f"{start}:{end}"
             json_graph["s"][edge_id] = {"id": edge_id, "type": 0, "s": {"s": start, "k": "bottom"}, "e": {"s": end, "k": "top"}, "title": label, "c": [edge_class]}
         
         return json_graph
+    
+    def _map_color(self, color: str) -> str:
+        return self.config['color_mapping'].get(color, 'd-cl-blue')
+    
+    def _map_shape(self, shape: str) -> int:
+        return self.config['shape_mapping'].get(shape, 2)
+    
+    def _map_edge(self, edge_type: str) -> str:
+        return self.config['edge_mapping'].get(edge_type, 'd-arw-e')
