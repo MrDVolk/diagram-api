@@ -39,6 +39,7 @@ class Parser:
 
                 graph_object.add_edge(source, target, label=label, type=edge_type)
 
+        graph_object.unflatten("-f -l 3")
         if self.config['render_image']:
             graph_object.layout(prog='dot')
             graph_object.draw('diagram.png')

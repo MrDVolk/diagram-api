@@ -45,15 +45,30 @@ class Converter:
             label = node.attr['label']
             color = self._map_color(node.attr.get('color', 'blue'))
             shape = self._map_shape(node.attr.get('shape', 'rectangle'))
-            json_graph['s'][node] = {"id": node, "type": shape, "position": {"x": x, "y": max_y_pos-y}, "title": label, "w": width, "h": height, "c": [color]}
+            json_graph['s'][node] = {
+                'id': node, 
+                'type': shape, 
+                'position': {'x': x, 'y': max_y_pos-y}, 
+                'title': label, 
+                'w': width, 'h': height, 
+                'c': [color]
+            }
         
         for edge in graph.edges():
             label = edge.attr.get('label', '')
             edge_class = self._map_edge(edge.attr.get('type', 'normal'))
-                
+
             start, end = edge
-            edge_id = f"{start}:{end}"
-            json_graph["s"][edge_id] = {"id": edge_id, "type": 0, "s": {"s": start, "k": "bottom"}, "e": {"s": end, "k": "top"}, "title": label, "c": [edge_class]}
+            edge_id = f'{start}:{end}'
+            connection = self.connect_nodes(json_graph['s'][start], json_graph['s'][end], json_graph)
+            json_graph['s'][edge_id] = {
+                'id': edge_id,
+                'type': 0,
+                's': {'s': start, 'k': connection['start']},
+                'e': {'s': end, 'k': connection['end']},
+                'title': label,
+                'c': [edge_class]
+            }
         
         return json_graph
     
@@ -65,3 +80,55 @@ class Converter:
     
     def _map_edge(self, edge_type: str) -> str:
         return self.config['edge_mapping'].get(edge_type, 'd-arw-e')
+
+    def get_existing_connections(self, node_id: str, side: str, json_graph) -> int:
+        possible_edges = [edge for edge in json_graph['s'] if isinstance(edge, str) and edge.startswith(f'{node_id}:')]
+        connection_count = 0
+        for edge in possible_edges:
+            edge_node = json_graph['s'][edge]
+            if edge_node['s']['s'] == node_id and edge_node['s']['k'] == side:
+                connection_count += 1
+
+        return connection_count
+    
+    def connect_nodes(self, start: dict, end: dict, json_graph: dict) -> dict:
+        def is_occupied(node_id, side):
+            return self.get_existing_connections(node_id, side, json_graph) > 2
+
+        # Determine relative position
+        dx = end['position']['x'] - start['position']['x']
+        combined_width = start['w'] + end['w']
+        if abs(dx) < combined_width:
+            dx = 0
+
+        dy = end['position']['y'] - start['position']['y']
+        avg_height = (start['h'] + end['h']) / 2
+        if abs(dy) < avg_height:
+            dy = 0
+
+        connection = {'start': '', 'end': ''}
+
+        # Directly aligned cases
+        if dx == 0:  # Vertically aligned
+            if dy > 0:  # end is below start
+                connection['start'] = 'bottom' if not is_occupied(start['id'], 'bottom') else 'left'
+                connection['end'] = 'top' if connection['start'] == 'bottom' else 'left'
+            else:  # end is above start
+                connection['start'] = 'top' if not is_occupied(start['id'], 'top') else 'left'
+                connection['end'] = 'bottom' if connection['start'] == 'top' else 'left'
+        elif dy == 0:  # Horizontally aligned
+            if dx > 0:  # end is to the right of start
+                connection['start'] = 'right' if not is_occupied(start['id'], 'right') else 'top'
+                connection['end'] = 'left' if connection['start'] == 'right' else 'top'
+            else:  # end is to the left of start
+                connection['start'] = 'left' if not is_occupied(start['id'], 'left') else 'top'
+                connection['end'] = 'right' if connection['start'] == 'left' else 'top'
+        else:  # Diagonally aligned
+            if dy > 0:  # end is below start
+                connection['start'] = 'bottom' if dx > 0 else 'left'
+                connection['end'] = 'top' if dx > 0 else 'right'
+            else:  # end is above start
+                connection['start'] = 'top' if dx > 0 else 'left'
+                connection['end'] = 'bottom' if dx > 0 else 'right'
+
+        return connection

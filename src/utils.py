@@ -15,9 +15,9 @@ def convert_value(value: str, name: str) -> int:
     
 
 def round_to_base(int_number: int, base: int = 48) -> int:
-    round_up = int_number % base
-    round_down = base - round_up
-    rounded = int_number + round_down if round_down < round_up else int_number - round_up
+    round_down = int_number % base
+    round_up = base - round_down
+    rounded = int_number + round_up if round_up < round_down else int_number - round_down
     if rounded == 0:
         return base
     return rounded
