@@ -1,6 +1,6 @@
 scale_map = {
     'x': 2,
-    'y': 1.5,
+    'y': 2,
     'width': 100,
     'height': 40
 }

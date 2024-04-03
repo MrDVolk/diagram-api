@@ -38,7 +38,7 @@ class Converter:
         for node in graph.nodes():
             x, y = node.attr['pos'].split(',')
             x = convert_value(x, 'x')
-            y = convert_value(y, 'y')
+            y = convert_value(max_y_pos-int(float(y)), 'y')
 
             height = convert_value(node.attr['height'], 'height')
             width = convert_value(node.attr['width'], 'width')
@@ -49,7 +49,7 @@ class Converter:
             json_graph['s'][node] = {
                 'id': node, 
                 'type': shape, 
-                'position': {'x': x, 'y': max_y_pos-y}, 
+                'position': {'x': x, 'y': y}, 
                 'title': label, 
                 'w': width, 'h': height, 
                 'c': [color]
