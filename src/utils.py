@@ -11,7 +11,7 @@ def convert_value(value: str, name: str) -> int:
         value *= scale_map[name]
     
     value = int(value)
-    return round_to_base(value)
+    return round_to_base(value) + 12  # required for the diagram to be displayed correctly
     
 
 def round_to_base(int_number: int, base: int = 48) -> int:
