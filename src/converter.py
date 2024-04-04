@@ -18,8 +18,8 @@ class Converter:
             'orange': 'd-cl-orange',
             'green': 'd-cl-green',
             'blue': 'd-cl-blue',
-            'dblue': 'd-cl-dblue',
-            'dgray': 'd-cl-dgray'
+            'darkblue': 'd-cl-dblue',
+            'darkgray': 'd-cl-dgray'
         })
         self.config.setdefault('edge_mapping', {
             'normal': ['d-arw-e'],
