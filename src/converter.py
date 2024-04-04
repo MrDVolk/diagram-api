@@ -22,9 +22,9 @@ class Converter:
             'dgray': 'd-cl-dgray'
         })
         self.config.setdefault('edge_mapping', {
-            'normal': 'd-arw-e',
-            'reverse': 'd-arw-s',
-            'dash': 'd-dash'
+            'normal': ['d-arw-e'],
+            'reverse': ['d-arw-s'],
+            'dash': ['d-dash', 'd-arw-e']
         })
 
     def to_json(self, graph: pgv.AGraph) -> dict:
@@ -65,7 +65,7 @@ class Converter:
             if (existing_edge_id := f'{end}:{start}') in json_graph['s']:
                 existing_edge = json_graph['s'][existing_edge_id]
                 reversed_edge_class = self._map_edge('reverse')
-                existing_edge['c'].append(reversed_edge_class)
+                existing_edge['c'].extend(reversed_edge_class)
                 continue
 
             connection = self.connect_nodes(json_graph['s'][start], json_graph['s'][end], json_graph)
@@ -75,7 +75,7 @@ class Converter:
                 's': {'s': start, 'k': connection['start']},
                 'e': {'s': end, 'k': connection['end']},
                 'title': label,
-                'c': [edge_class]
+                'c': edge_class
             }
         
         return json_graph
@@ -86,8 +86,8 @@ class Converter:
     def _map_shape(self, shape: str) -> int:
         return self.config['shape_mapping'].get(shape, 2)
     
-    def _map_edge(self, edge_type: str) -> str:
-        return self.config['edge_mapping'].get(edge_type, 'd-arw-e')
+    def _map_edge(self, edge_type: str) -> list[str]:
+        return self.config['edge_mapping'].get(edge_type, ['d-arw-e'])
 
     def get_existing_connections(self, node_id: str, side: str, json_graph) -> int:
         possible_edges = [

@@ -20,6 +20,7 @@ class Parser:
 
         graph_object = pgv.AGraph(directed=True)
 
+        added_nodes = set()
         for definition in definitions.split('\n'):
             match = re.match(self.config['definitions_regex'], definition)
             if match:
@@ -28,11 +29,16 @@ class Parser:
                 attributes = ast.literal_eval(match.group(3)) if match.group(3) else {}
 
                 graph_object.add_node(node, label=label, **attributes)
+                added_nodes.add(node)
 
         for edge in edges.split('\n'):
             match = re.match(self.config['edges_regex'], edge)
             if match:
                 source, target = match.group(1), match.group(2)
+                # check if the nodes we are trying to connect are defined
+                if source not in added_nodes or target not in added_nodes:
+                    continue
+
                 attributes = ast.literal_eval(match.group(3)) if match.group(3) else {}
                 label = attributes.get('label', '')
                 edge_type = attributes.get('type', 'normal')
