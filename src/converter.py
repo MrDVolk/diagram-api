@@ -52,7 +52,7 @@ class Converter:
                 'position': {'x': x, 'y': y}, 
                 'title': label, 
                 'w': width, 'h': height, 
-                'c': [color]
+                'styles': [color]
             }
         
         for edge in graph.edges():
