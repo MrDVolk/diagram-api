@@ -18,3 +18,11 @@ async def root() -> dict:
 @app.post("/convert")
 async def convert(request_data: ConvertRequest) -> dict:
     return {"link": upload_figure(request_data.input_string)}
+
+
+@app.get("/privacy")
+async def privacy() -> dict:
+    with open("privacy policy.txt", "r") as file:
+        privacy_policy = file.read()
+
+    return {"privacy": privacy_policy}

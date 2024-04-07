@@ -1,0 +1,16 @@
+Privacy Policy for DGRM.NET
+Last Updated: 2024-04-07
+1. Introduction
+Welcome to DGRM.NET Api. This privacy policy explains our practices concerning data handling through our service, 
+https://diagram-api.onrender.com and https://dgrm.net.
+2. Anonymous Data Storage
+DGRM.NET operates on a text-to-diagram basis. While we store the diagrams created by our users, this storage is done anonymously. 
+We do not have any means to link these diagrams back to the individual users who created them, ensuring that there is no collection of personal data.
+3. No Personal Data Collection
+We do not collect any personal identifiers or personal data from our users.
+4. No Cookies or Tracking
+We do not use cookies or any tracking technologies on our website.
+5. No Third-Party Services
+DGRM.NET does not integrate with any third-party services that collect data.
+6. Changes to This Privacy Policy
+We may update this privacy policy from time to time. We encourage you to review this policy periodically.
